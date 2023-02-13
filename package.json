@@ -1,0 +1,8 @@
+{
+  "name": "traktor-display-webserver",
+  "version": "1.0.0",
+  "description": "Displays the year of the currently playing track in traktor",
+  "main": "index.js",
+  "author": "Beh (github@beh.wtf)",
+  "license": "MIT"
+}
