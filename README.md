@@ -1,6 +1,6 @@
 # Traktor Track Display Webserver
 
-This is a quick and dirty fun project I made for a friend's birthday. He made a playlist with 1 song from the top 100 charts of every year he lived. This project was supposed to be a nice gimmick for the party.
+This is a quick and dirty fun project I made for a friend's birthday. He made a playlist with 1 song from the top 100 charts of every year he lived. This project was supposed to be a nice gimmick for the party while mixing the playlist with Traktor.
 
 It is meant to be used with [`traktor-api-client`](https://github.com/ErikMinekus/traktor-api-client) as data source.
 
