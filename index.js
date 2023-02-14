@@ -1,19 +1,18 @@
-const Koa = require('koa');
-const Router = require('koa-router');
-const koaBody = require('koa-body').default;
-const serve = require('koa-static');
-const websockify = require('koa-websocket');
-const path = require('path');
-const Deck = require('./deck');
+const Koa = require("koa");
+const Router = require("koa-router");
+const koaBody = require("koa-body").default;
+const serve = require("koa-static");
+const websockify = require("koa-websocket");
+const path = require("path");
+const Deck = require("./deck");
 
 const app = websockify(new Koa());
 const wsRouter = new Router();
 const router = new Router();
 const wsClients = [];
 
-
 /////////////////////////////////////////////////////////
-// 
+//
 //  What is currently playing logic
 //
 /////////////////////////////////////////////////////////
@@ -29,7 +28,7 @@ function handleDeckLoaded(data) {
 
     const deckId = data.deckId;
     if (!decks.has(deckId)) {
-        console.log(`Adding deck ${deckId} to decks pool.`)
+        console.log(`Adding deck ${deckId} to decks pool.`);
         decks.set(deckId, new Deck(deckId));
     }
 
@@ -81,27 +80,25 @@ function handleUpdateDeck(data) {
     }
 }
 
-
 /////////////////////////////////////////////////////////
-// 
+//
 //  Webserver
 //
 /////////////////////////////////////////////////////////
 
-
 /// WebSocket ///
 
 wsRouter.use((ctx, next) => {
-  // return `next` to pass the context (ctx) on to the next ws middleware
-  return next(ctx);
+    // return `next` to pass the context (ctx) on to the next ws middleware
+    return next(ctx);
 });
 
-wsRouter.get('/ws', async (ctx, next) => {
+wsRouter.get("/ws", async (ctx, next) => {
     console.log("New Websocket client!");
 
     const ws = ctx.websocket;
 
-    ws.on('message', (message) => {
+    ws.on("message", (message) => {
         const msgText = message.toString();
         console.log(`Got WS message: ${msgText}`);
 
@@ -113,7 +110,7 @@ wsRouter.get('/ws', async (ctx, next) => {
         }
     });
 
-    ws.on('error', (err) => {
+    ws.on("error", (err) => {
         console.log(err);
     });
 
@@ -131,61 +128,59 @@ function notifyClients(message) {
 
 /// API ///
 
-router.post('/deckLoaded/:deck', async (ctx) => {
-  try {
-    const deck = ctx.params.deck;
+router.post("/deckLoaded/:deck", async (ctx) => {
+    try {
+        const deck = ctx.params.deck;
 
-    // console.log("==========================================================")
-    console.log(`/deckLoaded/${deck}`)
-    // console.log("==========================================================")
-    
-    ctx.body = {
-      error: false,
-      type: "deckLoaded",
-      deckId: deck,
-      track: ctx.request.body
-    };
+        // console.log("==========================================================")
+        console.log(`/deckLoaded/${deck}`);
+        // console.log("==========================================================")
 
-    // console.log(JSON.stringify(ctx.body));
+        ctx.body = {
+            error: false,
+            type: "deckLoaded",
+            deckId: deck,
+            track: ctx.request.body,
+        };
 
-    handleDeckLoaded(ctx.body);
+        // console.log(JSON.stringify(ctx.body));
 
-  } catch (e) {
-    ctx.status = 400;
-    ctx.body = {
-      error: 'CANNOT_PARSE'
-    };
-  }
+        handleDeckLoaded(ctx.body);
+    } catch (e) {
+        ctx.status = 400;
+        ctx.body = {
+            error: "CANNOT_PARSE",
+        };
+    }
 });
 
-router.post('/updateDeck/:deck', async (ctx) => {
-  try {
-    const deck = ctx.params.deck;
+router.post("/updateDeck/:deck", async (ctx) => {
+    try {
+        const deck = ctx.params.deck;
 
-    // console.log("==========================================================")
-    console.log(`/updateDeck/${deck}`)
-    // console.log("==========================================================")
-    // console.log(ctx.request.body);
-    // console.log(JSON.stringify(ctx.request));
+        // console.log("==========================================================")
+        console.log(`/updateDeck/${deck}`);
+        // console.log("==========================================================")
+        // console.log(ctx.request.body);
+        // console.log(JSON.stringify(ctx.request));
 
-    ctx.body = {
-      error: false,
-      type: "updateDeck",
-      deckId: deck,
-      deckInfo: ctx.request.body
-    };
+        ctx.body = {
+            error: false,
+            type: "updateDeck",
+            deckId: deck,
+            deckInfo: ctx.request.body,
+        };
 
-    // currentUpdateDeck = ctx.body;
-    handleUpdateDeck(ctx.body);
+        // currentUpdateDeck = ctx.body;
+        handleUpdateDeck(ctx.body);
 
-    updateCurrentTrack();
-
-  } catch (e) {
-    ctx.status = 400;
-    ctx.body = {
-      error: 'CANNOT_PARSE'
-    };
-  }
+        updateCurrentTrack();
+    } catch (e) {
+        ctx.status = 400;
+        ctx.body = {
+            error: "CANNOT_PARSE",
+        };
+    }
 });
 
 // router.post('/updateMasterClock', async (ctx, next) => {
@@ -230,10 +225,9 @@ router.post('/updateDeck/:deck', async (ctx) => {
 //   }
 // });
 
-
 app.use(koaBody());
 app.ws.use(wsRouter.routes()).use(wsRouter.allowedMethods());
 app.use(router.routes());
-app.use(serve(path.join(__dirname, '/static')));
+app.use(serve(path.join(__dirname, "/static")));
 
 app.listen(8080);
