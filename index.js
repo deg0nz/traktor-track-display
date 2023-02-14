@@ -3,16 +3,18 @@ const Router = require('koa-router');
 const koaBody = require('koa-body').default;
 const serve = require('koa-static');
 const websockify = require('koa-websocket');
-// const WebSocket = require('ws');
-const path = require('path')
+const path = require('path');
 
 const app = websockify(new Koa());
-// const app = new Koa();
-
 const wsRouter = new Router();
 const router = new Router();
-
 const wsClients = [];
+
+
+// Placeholders for new Clients (in case of refresh)
+let currentDeckLoaded = null;
+// let currentUpdateDeck = null;
+
 
 wsRouter.use((ctx, next) => {
   // return `next` to pass the context (ctx) on to the next ws middleware
@@ -25,7 +27,15 @@ wsRouter.get('/ws', async (ctx, next) => {
     const ws = ctx.websocket;
 
     ws.on('message', (message) => {
-        console.log(`Got WS message: ${message.toString()}`);
+        const msgText = message.toString();
+        console.log(`Got WS message: ${msgText}`);
+
+        if (msgText === "Client Hello" && currentDeckLoaded !== null) {
+            const payload = JSON.stringify(currentDeckLoaded);
+            console.log("Sending current track");
+            console.log(payload);
+            ws.send(payload);
+        }
     });
 
     ws.on('error', (err) => {
@@ -61,6 +71,7 @@ router.post('/deckLoaded/:deck', async (ctx) => {
 
     console.log(JSON.stringify(ctx.body));
 
+    currentDeckLoaded = JSON.parse(JSON.stringify(ctx.body));
     notifyClients(ctx.body);
 
   } catch (e) {
@@ -88,6 +99,7 @@ router.post('/updateDeck/:deck', async (ctx) => {
       deckInfo: ctx.request.body
     };
 
+    // currentUpdateDeck = ctx.body;
     notifyClients(ctx.body);
 
   } catch (e) {
@@ -98,47 +110,47 @@ router.post('/updateDeck/:deck', async (ctx) => {
   }
 });
 
-router.post('/updateMasterClock', async (ctx, next) => {
-  try {
-    console.log("==========================================================")
-    console.log("/updateMasterClock");
-    console.log("==========================================================")
-    console.log(ctx.body);
+// router.post('/updateMasterClock', async (ctx, next) => {
+//   try {
+//     console.log("==========================================================")
+//     console.log("/updateMasterClock");
+//     console.log("==========================================================")
+//     console.log(ctx.body);
 
-    ctx.body = {
-      error: false,
-      parsed: ctx.request.body
-    };
+//     ctx.body = {
+//       error: false,
+//       parsed: ctx.request.body
+//     };
 
-  } catch (e) {
-    ctx.status = 400;
-    ctx.body = {
-      error: 'CANNOT_PARSE'
-    };
-  }
+//   } catch (e) {
+//     ctx.status = 400;
+//     ctx.body = {
+//       error: 'CANNOT_PARSE'
+//     };
+//   }
 
-//   return next;
-});
+// //   return next;
+// });
 
-router.post('/updateChannel/:channel', async (ctx, next) => {
-  try {
-    console.log("==========================================================")
-    console.log(`/updateChannel/${ctx.params.channel}`);
-    console.log("==========================================================")
+// router.post('/updateChannel/:channel', async (ctx, next) => {
+//   try {
+//     console.log("==========================================================")
+//     console.log(`/updateChannel/${ctx.params.channel}`);
+//     console.log("==========================================================")
 
-    ctx.body = {
-      error: false,
-      parsed: ctx.request.body
-    };
+//     ctx.body = {
+//       error: false,
+//       parsed: ctx.request.body
+//     };
 
-    console.log(ctx.body);
-  } catch (e) {
-    ctx.status = 400;
-    ctx.body = {
-      error: 'CANNOT_PARSE'
-    };
-  }
-});
+//     console.log(ctx.body);
+//   } catch (e) {
+//     ctx.status = 400;
+//     ctx.body = {
+//       error: 'CANNOT_PARSE'
+//     };
+//   }
+// });
 
 
 app.use(koaBody());

@@ -1,3 +1,6 @@
+//TODO: // Track handling ins backend und nur Updates hierher senden /////
+
+
 class Deck {
     constructor(id, title, artist, year) {
         this.id = id;
@@ -118,6 +121,7 @@ function handleDeckLoaded(data) {
     // }
 }
 
+
 function updateCurrentTrack() {
     // Only Decks A and B are supported for now
     const a = decks.get("A");
@@ -192,7 +196,7 @@ function handleUpdateDeck(data) {
     const deckInfo = data.deckInfo;
     const deck = decks.get(data.deck);
 
-    if (typeof deckInfo.isPlaying !== "undefined") {
+    if (typeof deck !== "undefined" && typeof deckInfo.isPlaying !== "undefined") {
         deck.isPlaying = deckInfo.isPlaying;
     }
 }
