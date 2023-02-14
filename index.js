@@ -19,8 +19,6 @@ const wsClients = [];
 
 // Placeholders for new Clients (in case of refresh)
 let currentTrack = null;
-// let currentUpdateDeck = null;
-
 const decks = new Map();
 
 function handleDeckLoaded(data) {
