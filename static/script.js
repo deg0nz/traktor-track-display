@@ -1,34 +1,3 @@
-//TODO: // Track handling ins backend und nur Updates hierher senden /////
-
-
-class Deck {
-    constructor(id, title, artist, year) {
-        this.id = id;
-        this.title = title;
-        this.artist = artist;
-        this.year = year;
-
-        this.isPlaying = false;
-    }
-
-    setTitle(title) {
-        this.title = title;
-    }
-
-    setArtist(artist) {
-        this.artist = artist;
-    }
-
-    setYear(year) {
-        this.year = year;
-    }
-
-    updateData(title, artist, year) {
-        this.setTitle(title);
-        this.setArtist(artist);
-        this.setYear(year);
-    }
-}
 
 const animations = [
     "bounce",
@@ -84,82 +53,24 @@ ws.addEventListener("open", () => {
 });
 
 ws.addEventListener("message", (message) => {
-    const data = JSON.parse(message.data);
+    const track = JSON.parse(message.data);
 
     console.log("Got message");
-    console.log(message.data);
+    console.log(track);
 
-    if (data.type === "deckLoaded") {
-        handleDeckLoaded(data);
-    }
-
-    if (data.type === "updateDeck") {
-        handleUpdateDeck(data);
-    }
-
-    updateScreen();
+    updateScreen(track);
 });
 
-function handleDeckLoaded(data) {
-    console.log(data);
-
-    const deckId = data.deck;
-    if (!decks.has(deckId)) {
-        decks.set(deckId, new Deck(deckId));
-    }
-
-    const track = data.track;
-    const deck = decks.get(deckId);
-    deck.updateData(track.title, track.artist, track.comment);
-
-    if (currentTrack === null) {
-        currentTrack = deck;
-    }
-
-    // if (currentTrack && deck.id !== currentTrack.id) {
-    //     nextTrack = deck;
-    // }
-}
-
-
-function updateCurrentTrack() {
-    // Only Decks A and B are supported for now
-    const a = decks.get("A");
-    const b = decks.get("B");
-
-    if (!a || !b) return false;
-
-    if (a.isPlaying && b.isPlaying) {
-        console.log("Both are playing");
-
-        return false;
-    } else if (a.isPlaying) {
-        console.log("A is playing");
-
-        currentTrack = a;
-        // nextTrack = b
-    } else if (b.isPlaying) {
-        console.log("B is playing");
-
-        currentTrack = b;
-        // nextTrack = a;
-    }
-
-    return true;
-}
-
-async function updateScreen() {
-    updateCurrentTrack();
-
+async function updateScreen(track) {
     const currentYear = document.getElementById("current_year");
     const currentTitle = document.getElementById("current_title");
     const currentArtist = document.getElementById("current_artist");
 
-    currentYear.innerHTML = currentTrack.year;
-    currentTitle.innerHTML = currentTrack.title;
-    currentArtist.innerHTML = currentTrack.artist;
+    currentYear.innerHTML = track.year;
+    currentTitle.innerHTML = track.title;
+    currentArtist.innerHTML = track.artist;
 
-    // await animatedUpdate(currentYear, currentTrack.year);
+    await animatedUpdate(currentYear, track.year);
 }
 
 async function animatedUpdate(element, newText) {
@@ -189,14 +100,3 @@ const animateCSS = async (element, animation, prefix = "animate__") => {
         node.addEventListener("animationend", handleAnimationEnd, { once: true });
     });
 };
-
-function handleUpdateDeck(data) {
-    console.log(data);
-
-    const deckInfo = data.deckInfo;
-    const deck = decks.get(data.deck);
-
-    if (typeof deck !== "undefined" && typeof deckInfo.isPlaying !== "undefined") {
-        deck.isPlaying = deckInfo.isPlaying;
-    }
-}
