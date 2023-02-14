@@ -1,0 +1,25 @@
+body {
+    background-color: #252323;
+    color: #FFFFFF;
+}
+
+main {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -60%);
+    transform: translate(-50%, -60%);
+    text-align: center;
+}
+
+#current_year {
+    font-size: 15em;
+}
+
+#current_title {
+    font-weight: bold;
+}
+/* 
+.container {
+    width: 50%;
+} */
