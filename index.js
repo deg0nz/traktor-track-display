@@ -11,6 +11,8 @@ const wsRouter = new Router();
 const router = new Router();
 const wsClients = [];
 
+const TIMECODE_MODE = true;
+
 /////////////////////////////////////////////////////////
 //
 //  What is currently playing logic
@@ -33,6 +35,10 @@ function handleDeckLoaded(data) {
     const track = data.track;
     const deck = decks.get(deckId);
     deck.updateData(track.title, track.artist, track.comment);
+
+    if (TIMECODE_MODE === true) {
+        deck.isPlaying = true;
+    }
 
     if (currentTrack === null) {
         currentTrack = deck;
@@ -75,6 +81,12 @@ function handleUpdateDeck(data) {
 
     if (typeof deck !== "undefined" && typeof deckInfo.isPlaying !== "undefined") {
         deck.isPlaying = deckInfo.isPlaying;
+    }
+
+    if (typeof deck !== "undefined" && typeof deckInfo.tempo !== "undefined") {
+        if (deckInfo.tempo === 0) {
+            deck.isPlaying = false;
+        } 
     }
 }
 
