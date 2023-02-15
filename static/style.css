@@ -19,3 +19,48 @@ main {
 #current_title {
     font-weight: bold;
 }
+
+.purple-yellow {
+    background: #3C1A5B;
+    color: #FFF748;
+}
+
+.black-red {
+    background: #1D1B1B;
+    color: #Ec4D37;
+}
+
+.orange-blue {
+    background: #EC8B53;
+    color: #141A46;
+}
+
+.orange-blue-inverted {
+    background: #141A46;
+    color: #EC8B53;
+}
+
+.blue-pink {
+    background: #EB2188;
+    color: #080A52;
+}
+
+.blue-pink-inverted {
+    background: #080A52;
+    color: #EB2188;
+}
+
+.cyan-pink {
+    background: #00FFFF;
+    color: #FF69B4;
+}
+
+.fuchsia-pink {
+    background: #EC449B;
+    color: #99F443;
+}
+
+.pink-purple-gradient {
+    background-image: linear-gradient(to right, #8000FF , #DE00FF);
+    color: #FFE8F5;
+}
