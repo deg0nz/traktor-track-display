@@ -86,7 +86,9 @@ function handleUpdateDeck(data) {
     if (typeof deck !== "undefined" && typeof deckInfo.tempo !== "undefined") {
         if (deckInfo.tempo === 0) {
             deck.isPlaying = false;
-        } 
+        } else {
+            deck.isPlaying = true;
+        }
     }
 }
 
